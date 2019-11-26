@@ -2,6 +2,7 @@ import numpy as np
 from scipy.signal import butter, lfilter
 from scipy.signal import hilbert
 from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -21,6 +22,7 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 def theta_wave(lfp):
     """
     Run bandpass filter on data to get theta waves.
+    # ? fs is only 100? 
     """
     return butter_bandpass_filter(lfp, 4, 7, 100)
 
@@ -72,7 +74,11 @@ def correlate_time_phase(spike_data, lfp_reference):
 def theta_features(spike_data, lfp_reference, trial_index, phase_range):
     """
     Create a feature vector (firing rates for cells) during a theta phase for a specific trial.
+
+    ? Where did the 200 to 300 come from? Cycles arn't aligned? 
     """
+    # for the long cycle, extend theta mean index from [200:300] to [200:]
+    # and the current spike index from [trial_index, :, 200:300] to [trial_index, :, 200:]
     theta_mean = theta_wave(lfp_reference[trial_index, :])[200:300]
     analytical_signal = hilbert(theta_mean)
     phase = np.unwrap(np.angle(analytical_signal))
@@ -82,7 +88,7 @@ def theta_features(spike_data, lfp_reference, trial_index, phase_range):
     if select_spike.shape[1] > 0:
         features = np.mean(select_spike, axis=1)
     else:
-        features = np.mean(current_spike, axis=1)  # in case of empty phase
+        features = np.mean(current_spike, axis=1)  # in case of empty phase 
     return features
 
 
@@ -90,8 +96,48 @@ def process_spike(spike_data, lfp_reference, phase_range=[480, 600]):
     """
     Wrapper for theta_features to process spike train data for all the trials.
     """
+    # n: trials, d: cells, t: time
     n, d, t = spike_data.shape
     training_features = np.zeros((n, d))
     for i in range(n):
         training_features[i] = theta_features(spike_data, lfp_reference, i, phase_range)
+    return training_features
+
+
+def theta_features2(spike_data, lfp_reference, trial_index, event, phase_range):
+    """
+    Create a feature vector (firing rates for cells) during a theta phase for a specific trial.
+
+    ? Where did the 200 to 300 come from? Cycles arn't aligned? 
+    """
+
+    if event == 'PokeOut':
+        th_ij = [100,200]
+    else:
+        th_ij = [200,300]
+        
+    # for the long cycle, extend theta mean index from [200:300] to [200:]
+    # and the current spike index from [trial_index, :, 200:300] to [trial_index, :, 200:]
+    theta_mean = theta_wave(lfp_reference[trial_index, :])[th_ij[0]:th_ij[1]]
+    analytical_signal = hilbert(theta_mean)
+    phase = np.unwrap(np.angle(analytical_signal))
+    phase_degree = phase * 180 / np.pi  # theta phase in degree
+    current_spike = spike_data[trial_index, :, th_ij[0]:th_ij[1]]
+    select_spike = current_spike[:, (phase_degree >= phase_range[0]) & (phase_degree <= phase_range[1])]
+    if select_spike.shape[1] > 0:
+        features = np.mean(select_spike, axis=1)
+    else:
+        features = np.mean(current_spike, axis=1)  # in case of empty phase 
+    return features
+
+
+def process_spike2(spike_data, lfp_reference, event, phase_range=[480, 600]):
+    """
+    Wrapper for theta_features to process spike train data for all the trials.
+    """
+    # n: trials, d: cells, t: time
+    n, d, t = spike_data.shape
+    training_features = np.zeros((n, d))
+    for i in range(n):
+        training_features[i] = theta_features2(spike_data, lfp_reference, i, event, phase_range)
     return training_features
