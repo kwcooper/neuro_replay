@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.cross_validation import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 from keras.models import Model
 from keras.layers import Dense, Dropout, Flatten, Input, merge, Convolution2D, AveragePooling2D
 from keras.optimizers import SGD, Adam
@@ -55,23 +55,26 @@ def cross_validate(all_tetrode_data, target, tetrode_ids, tetrode_units, verbose
     :param verbose: (bool) whether to print each validation fold accuracy
     :return: (2d numpy array) true and predicted labels
     """
-    kf = StratifiedKFold(target.argmax(axis=-1), n_folds=10)
+    # kf = StratifiedKFold(target.argmax(axis=-1), n_folds=10) # outdated 191101 kwc
+    # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
+    skf = StratifiedKFold(n_splits=10)
+    #skf.get_n_splits(all_tetrode_data, target.argmax(axis=-1))
     y_true = np.zeros(target.shape)
     y_hat = np.zeros(target.shape)
     i = 0
 
-    for train_index, test_index in kf:
+    for train_index, test_index in skf.split(target.argmax(axis=-1), target.argmax(axis=-1)): # kf:
         X_train, X_test = select_data(all_tetrode_data, train_index), select_data(all_tetrode_data, test_index)
         y_train, y_test = target[train_index, :], target[test_index, :]
 
         model = build_tetrode_model(tetrode_ids, tetrode_units)
-        checkpointer = ModelCheckpoint('/home/linggel/neuroscience/temp_model.h5',
+        checkpointer = ModelCheckpoint('temp_model.h5',
                                        verbose=0, save_best_only=True)
         hist = model.fit(X_train, y_train,
                          nb_epoch=200, batch_size=20,
                          validation_data=(X_test, y_test),
                          callbacks=[checkpointer], verbose=0)
-        best_model = load_model('/home/linggel/neuroscience/temp_model.h5')
+        best_model = load_model('temp_model.h5')
 
         n = y_test.shape[0]
         y_true[i:(i + n), :] = y_test

@@ -1,5 +1,8 @@
-import numpy as np
 
+# Keiland's version
+import numpy as np
+#import np_utils as np_utils
+from keras.utils import np_utils
 
 def filter_trials(trial_info):
     rat_correct = trial_info[:, 0] == 1
@@ -10,11 +13,19 @@ def filter_trials(trial_info):
 
 
 def prepare_data(rat_name):
+
+    # prep paths:
+    dataPaths = {}
+    dataPaths['trial'] = 'D:\Documents\Data\processedHPC\{}\{}_trial_info.npy'
+    dataPaths['spike'] = 'D:\Documents\Data\processedHPC\{}\{}_spike_data_binned.npy'
+    dataPaths['lfp'] = 'D:\Documents\Data\processedHPC\{}\{}_lfp_data_sampled.npy'
+    
     # load data
-    spike_data_binned = np.load('/home/linggel/neuroscience/processed_data/{}_spike_data_binned.npy'.format(rat_name))
-    lfp_data_sampled = np.load('/home/linggel/neuroscience/processed_data/{}_lfp_data_sampled.npy'.format(rat_name))
+    trial_info = np.load(dataPaths['trial'].format(rat_name,rat_name.lower()))
+    spike_data_binned = np.load(dataPaths['spike'].format(rat_name, rat_name.lower()))
+    lfp_data_sampled = np.load(dataPaths['lfp'].format(rat_name, rat_name.lower()))
     lfp_data_sampled = np.swapaxes(lfp_data_sampled, 1, 2)
-    trial_info = np.load('/home/linggel/neuroscience/processed_data/{}_trial_info.npy'.format(rat_name))
+    
     # process data
     trial_indices = filter_trials(trial_info)
     decoding_start = 210
@@ -27,6 +38,7 @@ def prepare_data(rat_name):
     decoding_data_lfp = lfp_data_sampled[:, :, decoding_start:decoding_end]
     decoding_target = np_utils.to_categorical((trial_info[trial_indices, 3] - 1).astype(int))
     # organize tetrode data
+    rat_name = rat_name.lower()
     if rat_name == 'superchris':
         tetrode_ids = [1, 10, 12, 13, 14, 15, 16, 18, 19, 2, 20, 21, 22, 23, 3, 4, 5, 6, 7, 8, 9]
         tetrode_units = {1:3, 10:0, 12:1, 13:8, 14:4, 15:6, 16:1, 18:0, 19:4, 2:3, 
