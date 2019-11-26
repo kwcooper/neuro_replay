@@ -206,7 +206,8 @@ def analysis_flow_lastTrial(dataPaths, rat_name, theta_thres=20, corr_thres=0.9,
 
 
 
-# This guy should give us the extended theta cycle analysis
+# This guy should give us the extended theta cycle analysis TD:#@ignore_warnings(category=FutureWarning)?
+@ignore_warnings(category=ConvergenceWarning)
 def multiple_theta_flow(dataPaths, rat_name):
     trial_info, spike_data, lfp_data = load_data(dataPaths, rat_name)
     target, spike_data, lfp_data = clean_data(trial_info, spike_data, lfp_data)
