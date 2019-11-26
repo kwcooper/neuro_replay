@@ -1,5 +1,6 @@
 # Rat hippocampus decoding and sequential memory replay
 
+
 Neuron spike train and local field potential data decoding during experiment: http://www.jneurosci.org/content/36/5/1547
 
 Previous Bayesian statistical model: https://www.ncbi.nlm.nih.gov/pubmed/28529731
