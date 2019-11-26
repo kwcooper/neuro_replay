@@ -1,13 +1,7 @@
 # Rat hippocampus decoding and sequential memory replay
 
-
-Neuron spike train and local field potential data decoding during experiment: http://www.jneurosci.org/content/36/5/1547
-
-Previous Bayesian statistical model: https://www.ncbi.nlm.nih.gov/pubmed/28529731
-
-Spike train data analysis: https://www.sciencedirect.com/science/article/pii/S0896627316302501
-
-Convolutional neural networks: https://keras.io/getting-started/sequential-model-guide/#sequence-classification-with-1d-convolutions
+Decode odor representions encoded by hippocampal neuronal populations, as per the 2019 paper: [Hippocampal ensembles represent sequential
+relationships among discrete nonspatial events](https://www.biorxiv.org/content/biorxiv/early/2019/11/13/840199.full.pdf)
 
 
 ## neural_decoding
@@ -59,3 +53,14 @@ p1 = paired_t_test(np.concatenate([decoding_preds1_B[:, 0], decoding_preds1_C[:,
 ```
 
 **Final results**: see notebook `final_theta_analysis.ipynb`
+
+
+## Literature 
+
+Neuron spike train and local field potential data decoding during experiment: http://www.jneurosci.org/content/36/5/1547
+
+Previous Bayesian statistical model: https://www.ncbi.nlm.nih.gov/pubmed/28529731
+
+Spike train data analysis: https://www.sciencedirect.com/science/article/pii/S0896627316302501
+
+Convolutional neural networks: https://keras.io/getting-started/sequential-model-guide/#sequence-classification-with-1d-convolutions
