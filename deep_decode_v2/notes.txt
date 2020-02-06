@@ -1,0 +1,50 @@
+
+
+Deep decoding notes
+init 200131
+Keiland Cooper
+
+
+### To get started, install:
+tensorflow (Currently using 2.1.0) `pip install tensorflow` (requires py 3.6)
+h5py `pip install h5py`
+graphviz `pip install graphviz`
+pydot `pip install pydot`
+Keras (using 2.3.1) `sudo pip install keras`
+scikit-learn `pip install -U numpy scipy scikit-learn`
+
+
+
+Python stuff
+
+Use brew switch on OSX to switch python versions...
+// need to look more into this, it seems useful
+
+
+Python path 
+use `which python` to see which one your system is useing
+
+`ls -la /usr/bin/python*`
+
+`PYTHONPATH="/usr/local/lib/python2.7/site-packages:$PYTHONPATH"` 
+
+Old keras notes: http://faroit.com/keras-docs/1.1.2/layers/convolutional/#convolution2d
+
+
+###Changelog
+Updated path call
+Updated calls to conv2d
+fixed call to accuracy
+fixed dropout call
+fixed epoch arguments
+
+Changed the latent calculation to remove float error
+updated model call
+Updated latent model function to trial selected data...jk
+	reverted to selecting trials post hoc. This may need to be revisited... 
+
+
+
+
+
+
