@@ -1,0 +1,57 @@
+
+
+
+% Load in the data matricies
+%/Users/K/Desktop/fortinLab/data_playground/Data/
+%load('/Users/K/Desktop/fortinLab/Data/Mitt_July18_5odorswithSkips_EnsembleMatrix.mat');
+%load('/Users/K/Desktop/fortinLab/Data/Mitt_July18_5odorswithSkips_BehaviorMatrix.mat');
+
+% let's navigate to the data directory, wherever that may be...
+% Path = '/Volumes/PNY64_101/Mitt';
+%Path = fullfile('D:','Documents','Data','superchris','02122009 FamiliarSeq Skips');
+%Path = fullfile('D:','Documents','Data','superchris','superchris_drive');
+
+Path = fullfile('D:','Documents','Data','driveCA1_wellTrained');
+rat_name = {'Barat', 'Buchanan', 'Stella', 'Superchris', 'Mitt'};
+
+for ii = 1:length(rat_name)
+    ratPath = fullfile(Path, rat_name{ii}, filesep);
+
+    cd(ratPath);
+
+    %%
+    % As per what Lingge had used to transform the data, the EpochExtraction_SM function
+    % (for example see: Phase Position Scatter CA1 PROTO.m)
+    fprintf("Extracting files...\n")
+    tic
+    event = 'PokeIn'; % 'PokeOut'; %
+    [unitEpoch,...
+     unitIDs,...
+     lfpEpoch,... 
+     lfpIDs,...
+     trialTimeBins,...
+     eventTimeBins,...
+     trialInfo] = EpochExtraction_SM(event, -2, 2);
+    % , 'lfpBand', 'All'
+    toc
+
+    % Great! Now let's save our hard work
+    fprintf("Saving file: \n")
+    %saveName = "mitt_extraction_odor2s.mat";
+
+    saveName = ['supercris_extraction_odor2s_', event, '.mat'];
+    save(saveName,"unitEpoch", "unitIDs", "lfpEpoch", "lfpIDs", "trialTimeBins", "eventTimeBins", "trialInfo")
+    % , '-v7.3' '-v6' % Removed the , '-v7.3' flag from the save file last arg
+    disp(saveName);
+    
+end
+
+%% BONEYARD
+
+if 0 % Not used
+    % Now let's organize these guy's behavior by their trials:
+    preTrialBehavMatrix = OrganizeTrialData_SM(behavMatrix, behavMatrixColIDs, [0 1.5], 'PokeIn');
+
+    % And now let's fix up the cells...
+    preTrialEnsemble = ExtractTrialData_SM(preTrialBehavMatrix, ensembleMatrix(:,2:end)); %#ok<*NODEF>`
+end
